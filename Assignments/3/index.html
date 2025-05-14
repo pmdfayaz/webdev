@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Registration Form</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      min-height: 100vh;
+      background: url('https://images.unsplash.com/photo-1521791136064-7986c2920216?auto=format&fit=crop&w=1350&q=80') no-repeat center center/cover;
+      position: relative;
+    }
+
+    body::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: rgba(255, 255, 255, 0.2);
+      backdrop-filter: blur(8px);
+      z-index: 0;
+    }
+
+    .form-container {
+      position: relative;
+      z-index: 1;
+      max-width: 500px;
+      margin: 50px auto;
+      background: rgba(255, 255, 255, 0.9);
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+      animation: fadeIn 1s ease-in-out;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(-20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    h2 {
+      text-align: center;
+      color: #333;
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: block;
+      margin-top: 15px;
+      color: #333;
+      font-weight: bold;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 10px;
+      margin-top: 5px;
+      border: 2px solid #ccc;
+      border-radius: 6px;
+      transition: border-color 0.3s, box-shadow 0.3s;
+    }
+
+    input:focus, select:focus {
+      border-color: #007acc;
+      outline: none;
+      box-shadow: 0 0 8px rgba(0, 122, 204, 0.4);
+    }
+
+    .gender-group {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 10px;
+    }
+
+    .gender-group label {
+      font-weight: normal;
+    }
+
+    .gender-group input {
+      width: auto;
+      margin-right: 5px;
+    }
+
+    .checkbox-group {
+      margin-top: 20px;
+    }
+
+    .checkbox-group input {
+      margin-right: 10px;
+    }
+
+    .submit-btn {
+      width: 100%;
+      padding: 12px;
+      margin-top: 20px;
+      border: none;
+      border-radius: 6px;
+      background-color: #007acc;
+      color: white;
+      font-size: 1rem;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background-color 0.3s, transform 0.2s;
+    }
+
+    .submit-btn:hover {
+      background-color: #005fa3;
+      transform: scale(1.03);
+    }
+
+    .submit-btn:active {
+      transform: scale(0.97);
+    }
+
+    .error {
+      color: red;
+      font-size: 0.9rem;
+      margin-top: 5px;
+    }
+
+    .success-message {
+      color: green;
+      text-align: center;
+      margin-top: 15px;
+    }
+
+    @media (max-width: 600px) {
+      .form-container {
+        margin: 20px;
+        padding: 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="form-container">
+    <h2>Registration Form</h2>
+    <form id="registrationForm" novalidate>
+      <label for="firstname">First Name</label>
+      <input type="text" id="firstname" name="firstname" required>
+
+      <label for="lastname">Last Name</label>
+      <input type="text" id="lastname" name="lastname" required>
+
+      <label for="dob">Date of Birth</label>
+      <input type="date" id="dob" name="dob" required>
+
+      <label>Gender</label>
+      <div class="gender-group">
+        <label><input type="radio" name="gender" value="Male" required> Male</label>
+        <label><input type="radio" name="gender" value="Female"> Female</label>
+        <label><input type="radio" name="gender" value="Other"> Other</label>
+      </div>
+
+      <label for="email">Email</label>
+      <input type="email" id="email" name="email" required>
+
+      <label for="password">Password</label>
+      <input type="password" id="password" name="password" required>
+
+      <label for="confirmPassword">Confirm Password</label>
+      <input type="password" id="confirmPassword" name="confirmPassword" required>
+      <div class="error" id="passwordError"></div>
+
+      <div class="checkbox-group">
+        <label><input type="checkbox" id="terms" required> I accept the Terms and Conditions</label>
+      </div>
+
+      <button type="submit" class="submit-btn">Register</button>
+      <div class="success-message" id="successMessage"></div>
+    </form>
+  </div>
+
+  <script>
+  const form = document.getElementById('registrationForm');
+  const password = document.getElementById('password');
+  const confirmPassword = document.getElementById('confirmPassword');
+  const passwordError = document.getElementById('passwordError');
+  const successMessage = document.getElementById('successMessage');
+
+  form.addEventListener('submit', function (e) {
+    e.preventDefault();
+
+    // Reset messages
+    passwordError.textContent = "";
+    successMessage.textContent = "";
+
+    const firstname = document.getElementById('firstname').value.trim();
+    const lastname = document.getElementById('lastname').value.trim();
+    const dob = document.getElementById('dob').value;
+    const email = document.getElementById('email').value.trim();
+    const gender = form.querySelector('input[name="gender"]:checked');
+    const terms = document.getElementById('terms').checked;
+
+    let isValid = true;
+    let messages = [];
+
+    // Check required fields
+    if (!firstname) {
+      messages.push("First name is required.");
+      isValid = false;
+    }
+    if (!lastname) {
+      messages.push("Last name is required.");
+      isValid = false;
+    }
+    if (!dob) {
+      messages.push("Date of birth is required.");
+      isValid = false;
+    }
+    if (!gender) {
+      messages.push("Please select a gender.");
+      isValid = false;
+    }
+
+    // Email format
+    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!email || !emailPattern.test(email)) {
+      messages.push("Please enter a valid email address.");
+      isValid = false;
+    }
+
+    // Password match
+    if (password.value !== confirmPassword.value) {
+      messages.push("Passwords do not match.");
+      isValid = false;
+    }
+
+    // Terms and conditions
+    if (!terms) {
+      messages.push("You must accept the Terms and Conditions.");
+      isValid = false;
+    }
+
+    if (!isValid) {
+      passwordError.innerHTML = messages.map(msg => `<div>${msg}</div>`).join('');
+    } else {
+      successMessage.textContent = "Registration successful!";
+      form.reset();
+    }
+  });
+</script>
+
+</body>
+</html>
