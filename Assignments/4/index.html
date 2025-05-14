@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tic Tac Toe</title>
+    <style>
+        * {
+            padding: 0;
+            margin: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        body {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            margin: 0;
+            background-image: url('asset/bg.png');
+            background-size: cover;
+            background-position: center;
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
+            background-color: rgba(167, 140, 217, 0.7);
+            transition: background-color 0.3s ease;
+        }
+        header {
+            width: 80%;
+            background: #8e44ad;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.7rem;
+            font-weight: 700;
+            border-radius: 10px 10px 0 0;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            animation: slideDown 0.5s ease-out;
+            padding: 20px 0; /* Add padding for spacing */
+        }
+        @keyframes slideDown {
+            from { transform: translateY(-50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        .btns {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px; /* Space between title and buttons */
+        }
+        .btns button {
+            background: #f0f0f0;
+            color: #8e44ad;
+            border: none;
+            padding: 10px 15px;
+            font-weight: bold;
+            cursor: pointer;
+            border-radius: 8px;
+            transition: background-color 0.3s ease, transform 0.2s ease-in-out;
+        }
+        .btns button:hover {
+            background-color: #e0e0e0;
+            transform: scale(1.05);
+        }
+        main {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 30px;
+            background: rgba(80, 80, 80, 0.5); /* Dark gray with 50% translucency */
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border-radius: 10px; /* Apply border-radius to all corners */
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+            padding: 20px;
+            animation: fadeIn 0.5s ease-out 0.2s forwards;
+            opacity: 0;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        .scoreboard {
+            width: 80%;
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 25px;
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(6px);
+            -webkit-backdrop-filter: blur(6px);
+            border-radius: 10px;
+            padding: 15px 30px;
+            font-weight: bold;
+            color: #8e44ad;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+        .game_cnt {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            grid-template-rows: repeat(3, 1fr);
+            width: 400px;
+            height: 400px;
+            background-color: transparent;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        .game_box {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            color: #5e2e8a;
+            cursor: pointer;
+            transition: background-color 0.2s ease-in-out, transform 0.1s ease-in-out;
+            background-color: #b399e0; /* Brighter purple tile background */
+            border-right: 4px solid #888; /* Gray right separator */
+            border-bottom: 4px solid #888; /* Gray bottom separator */
+        }
+        .game_box:hover {
+            background-color: #c0a6ed; /* Even brighter purple on hover */
+            transform: scale(1.02);
+        }
+        .game_box:active {
+            transform: scale(0.98);
+        }
+        .game_box:nth-child(3n) {
+            border-right: none;
+        }
+        .game_box:nth-child(1) ~ .game_box:nth-child(3) {
+            border-top: none;
+        }
+        .game_box:nth-child(7) ~ .game_box:nth-child(9) {
+            border-bottom: none;
+        }
+        .game_box:nth-child(1),
+        .game_box:nth-child(4),
+        .game_box:nth-child(7) {
+            border-left: none;
+        }
+        .x_box::before {
+            content: 'X';
+            font-weight: bold;
+            animation: markAppear 0.3s ease-out;
+        }
+        .o_box::before {
+            content: 'O';
+            font-weight: bold;
+            animation: markAppear 0.3s ease-out;
+        }
+        @keyframes markAppear {
+            from { opacity: 0; transform: scale(0.5); }
+            to { opacity: 1; transform: scale(1); }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        TIC TAC TOE
+        <div class="btns">
+            <button onclick="undo()" title="Undo">UNDO</button>
+            <button onclick="resetGame()" title="Reset">RESET</button>
+        </div>
+    </header>
+
+    <main>
+        <div class="scoreboard">
+            <div id="x_score"></div>
+            <div id="o_score"></div>
+        </div>
+        <div class="game_cnt" id="gameBoard">
+            <div class="game_box" data-index="0"></div>
+            <div class="game_box" data-index="1"></div>
+            <div class="game_box" data-index="2"></div>
+            <div class="game_box" data-index="3"></div>
+            <div class="game_box" data-index="4"></div>
+            <div class="game_box" data-index="5"></div>
+            <div class="game_box" data-index="6"></div>
+            <div class="game_box" data-index="7"></div>
+            <div class="game_box" data-index="8"></div>
+        </div>
+    </main>
+
+    <script>
+    let xName = "";
+    let oName = "";
+    let xScore = 0;
+    let oScore = 0;
+
+    const xScoreEl = document.getElementById("x_score");
+    const oScoreEl = document.getElementById("o_score");
+    const boxes = document.querySelectorAll(".game_box");
+
+    let currentPlayer = "x";
+    let moveHistory = [];
+    let vsComputer = false;
+    let gameActive = true; // To control if the game is still playable
+    let waitingForReset = false; // Flag to prevent moves immediately after game end
+
+    function askPlayerNames() {
+        xName = prompt("Enter name for X Player:") || "Player X";
+        const opponentChoice = confirm("Play against computer? Click OK for Yes, Cancel for Player vs Player.");
+        vsComputer = opponentChoice;
+        oName = vsComputer ? "Computer" : (prompt("Enter name for O Player:") || "Player O");
+        updateScoreboard();
+        resetBoard(); // Reset the board after setting names
+        gameActive = true; // Ensure game is active after reset
+        waitingForReset = false; // Reset the flag
+        if (vsComputer && currentPlayer === "o") {
+            setTimeout(computerMove, 500);
+        }
+    }
+
+    function updateScoreboard() {
+        xScoreEl.textContent = `${xName}: ${xScore}`;
+        oScoreEl.textContent = `${oName}: ${oScore}`;
+    }
+
+    function checkWinner() {
+        const winPatterns = [
+            [0,1,2],[3,4,5],[6,7,8],
+            [0,3,6],[1,4,7],[2,5,8],
+            [0,4,8],[2,4,6]
+        ];
+
+        const marks = Array.from(boxes).map(box =>
+            box.classList.contains("x_box") ? "x" :
+            box.classList.contains("o_box") ? "o" : ""
+        );
+
+        for (const [a,b,c] of winPatterns) {
+            if (marks[a] && marks[a] === marks[b] && marks[b] === marks[c]) {
+                return marks[a];
+            }
+        }
+        return marks.includes("") ? null : "draw";
+    }
+
+    function resetBoard() {
+        boxes.forEach(box => box.className = "game_box");
+        moveHistory = [];
+        currentPlayer = "x";
+        gameActive = true; // Reset game state
+        waitingForReset = false; // Reset the flag
+    }
+
+    function handleBoxClick(e) {
+        if (!gameActive || waitingForReset || (vsComputer && currentPlayer === "o")) return; // Prevent clicks if game over, waiting for reset, or computer's turn
+
+        const box = e.target;
+        if (box.classList.contains("x_box") || box.classList.contains("o_box")) return;
+
+        makeMove(box);
+    }
+
+    function makeMove(box, isComputer = false) {
+    if (!gameActive || waitingForReset) return;
+    if ((vsComputer && currentPlayer === "o" && !isComputer) || (vsComputer && currentPlayer === "x" && isComputer)) return;
+
+    const boxClass = currentPlayer === "x" ? "x_box" : "o_box";
+    box.classList.add(boxClass);
+    moveHistory.push({ box: box, player: currentPlayer });
+
+    const winner = checkWinner();
+    if (winner) {
+        gameActive = false;
+        waitingForReset = true;
+        setTimeout(() => {
+            if (winner === "x") {
+                xScore++;
+                alert(`${xName} wins!`);
+            } else if (winner === "o") {
+                oScore++;
+                alert(`${oName} wins!`);
+            } else {
+                alert("It's a draw!");
+            }
+            updateScoreboard();
+            resetBoard();
+            if (vsComputer && currentPlayer === "x") {
+                setTimeout(computerMove, 500);
+            }
+            waitingForReset = false;
+        }, 300);
+        return;
+    }
+
+    currentPlayer = currentPlayer === "x" ? "o" : "x";
+
+    if (vsComputer && currentPlayer === "o" && gameActive) {
+        setTimeout(computerMove, 500);
+    }
+}
+
+    function computerMove() {
+    if (!gameActive || waitingForReset) return;
+
+    const availableBoxes = Array.from(boxes).filter(
+        box => !box.classList.contains("x_box") && !box.classList.contains("o_box")
+    );
+
+    if (availableBoxes.length > 0) {
+        const randomBox = availableBoxes[Math.floor(Math.random() * availableBoxes.length)];
+        makeMove(randomBox, true);
+    }
+}
+
+    function undo() {
+        if (!gameActive && moveHistory.length === 0) return;
+
+        const lastMove = moveHistory.pop();
+        if (!lastMove) return;
+
+        lastMove.box.className = "game_box"; // Use the stored box element
+        currentPlayer = lastMove.player; // Revert to the player who made the last move
+        gameActive = true; // Allow further moves after undo
+        waitingForReset = false; // Reset the flag
+
+        // If the last move was by the computer, undo that too
+        if (vsComputer && moveHistory.length > 0 && currentPlayer === "x") {
+            const secondLastMove = moveHistory.pop();
+            if (secondLastMove) {
+                secondLastMove.box.className = "game_box";
+                currentPlayer = secondLastMove.player; // Revert correctly
+            }
+        }
+    }
+
+    function resetGame() {
+        xScore = 0;
+        oScore = 0;
+        askPlayerNames();
+    }
+
+    // Initialize
+    askPlayerNames();
+    boxes.forEach(box => box.addEventListener("click", handleBoxClick));
+    updateScoreboard();
+</script>
+</body>
+</html>
